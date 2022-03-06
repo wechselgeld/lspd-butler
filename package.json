@@ -1,0 +1,26 @@
+{
+  "name": "lspd-butler---rank-addon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js | pino-pretty -i pid,hostname -t dd-mm-yyyy HH:MM:ss"
+  },
+  "author": "newa.media",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.27.2",
+    "discord-logs": "^2.0.1",
+    "discord.js": "^13.6.0",
+    "nodemon": "^2.0.15",
+    "pino": "^7.0.0-rc.9",
+    "pretty-ms": "^7.0.1",
+    "sequelize": "^6.17.0",
+    "sqlite3": "^5.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.9.0"
+  }
+}

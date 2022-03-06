@@ -1,0 +1,4 @@
+lspd.sqlite
+.eslintrc.json
+database/
+node_modules/
