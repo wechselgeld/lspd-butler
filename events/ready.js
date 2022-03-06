@@ -1,8 +1,18 @@
 /* eslint-disable no-unused-vars */
 const logger = require('../utilities/logger');
-const { MessageEmbed, WebhookClient } = require('discord.js');
-const { versionString, ownerId } = require('../database/old/data.json');
-const { lspd, activity, bot } = require('../database/dbTables');
+const {
+	MessageEmbed,
+	WebhookClient,
+} = require('discord.js');
+const {
+	versionString,
+	ownerId,
+} = require('../database/old/data.json');
+const {
+	lspd,
+	activity,
+	bot,
+} = require('../database/dbTables');
 
 module.exports = {
 	name: 'ready',
@@ -17,24 +27,37 @@ module.exports = {
 
 		lspd.sync();
 		bot.sync();
-		activity.sync({ force: true });
+		activity.sync({
+			force: true,
+		});
 
-		const found = await bot.findOne({ where: { ownerId: '272663056075456512' } });
+		const found = await bot.findOne({
+			where: {
+				ownerId: '272663056075456512',
+			},
+		});
 		if (found) found.increment('version');
 
 		const wechselgeld = client.users.cache.find(user => user.id === ownerId);
 		const embedBuilder = new MessageEmbed();
 
 		embedBuilder.setColor('#04234f')
-			.setAuthor({ name: 'Los Santos Police Department', iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png' })
+			.setAuthor({
+				name: 'Los Santos Police Department',
+				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
+			})
 			.setTitle('Bot online')
 			.setDescription('Aktuelle Version › ' + versionString + '.' + found.version + '\nNeustart ausgeführt von › ' + wechselgeld.username)
-			.setFooter({ text: 'Ray-ID › Event\nCopyright © 2022 newa.media', iconURL: wechselgeld.avatarURL() })
+			.setFooter({
+				text: 'Ray-ID › Event\nCopyright © 2022 newa.media',
+				iconURL: wechselgeld.avatarURL(),
+			})
 			.setTimestamp();
 
-		const webhookClient = new WebhookClient({ id: '949640596501434438', token: 'EyI8kPu9Z0o9tnG7DPvF2ENKgWulrodqKjJbdBf7g4p5ZWYBU6bJJ9IcrQdhj5cA87Ux' });
-
-		webhookClient.send({
+		const webhookClient = new WebhookClient({
+			id: '949640596501434438',
+			token: 'EyI8kPu9Z0o9tnG7DPvF2ENKgWulrodqKjJbdBf7g4p5ZWYBU6bJJ9IcrQdhj5cA87Ux',
+		}).send({
 			username: `${wechselgeld.username} | powered by nightmare API`,
 			avatarURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
 			embeds: [embedBuilder],

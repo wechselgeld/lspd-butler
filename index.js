@@ -70,7 +70,6 @@ client.on('interactionCreate', async interaction => {
 			});
 		}
 	}
-
 });
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
