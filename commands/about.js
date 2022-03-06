@@ -37,7 +37,7 @@ module.exports = {
 		} else {
 			embedBuilder
 				.setTitle('Hier ist nichts... außer Spinnenweben! 🕸️')
-				.setDescription('Ich kann in meiner Datenbank keine Einträge finden.');
+				.setDescription('Ich kann in meiner Datenbank keine Einträge über <@' + member.id + '> finden.');
 		}
 
 		await interaction.reply({ fetchReply: true, ephemeral: true, embeds: [embedBuilder] });
