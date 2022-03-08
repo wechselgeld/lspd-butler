@@ -28,49 +28,42 @@ module.exports = {
 		const member = interaction.options.getMember('officer');
 		const role = interaction.options.getRole('rang');
 
-		const embedBuilder = new MessageEmbed();
-		embedBuilder.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
+		const embedBuilder = new MessageEmbed()
+			.setColor('#04234f')
 			.setFooter({
 				text: `Ray-ID › ${interaction.id}\nCopyright © 2022 newa.media`,
 				iconURL: interaction.user.avatarURL(),
 			})
 			.setTimestamp();
 
-		if ((!interaction.member.roles.cache.some(userRoles => userRoles.id === givers))) {
+		if (!(interaction.member.roles.cache.some(userRoles => userRoles.id === givers))) { // If the user !has one of the giver-roles
 			embedBuilder.setTitle('Sorry, Du bist nicht der, den ich erwartet habe... 🔍')
 				.setDescription('Dir fehlt die Berechtigung, um den Befehl ausführen zu dürfen.\n*Du glaubst, dass das ein Fehler ist? Wende Dich bitte an <@272663056075456512>!*');
 
-			interaction.reply({
+			return interaction.reply({
 				embeds: [embedBuilder],
 				ephemeral: true,
 			});
-			return;
 		}
 
-		if (!role.editable) {
+		if (!role.editable) { // If the role is too high for the bot
 			embedBuilder.setTitle('Ups, irgendwie geht das nicht... 🤨')
 				.setDescription(`Ich kann die <@&${role.id}>-Rolle nicht erteilen, da sie höher gestellt ist als meine.`);
 
-			interaction.reply({
+			return interaction.reply({
 				embeds: [embedBuilder],
 				ephemeral: true,
 			});
-			return;
 		}
 
-		if (!giveableRanks.includes(role.id)) {
+		if (!giveableRanks.includes(role.id)) { // If the role is a giveable role that can be given with the command
 			embedBuilder.setTitle('Hä? So hab ich mir das nicht vorgestellt... 🤨')
 				.setDescription(`Die <@&${role.id}>-Rolle ist kein normaler Rang. Versuche es mit einem Rang von <@&946136030279524383> bis <@&946136381799952444>.`);
 
-			interaction.reply({
+			return interaction.reply({
 				embeds: [embedBuilder],
 				ephemeral: true,
 			});
-			return;
 		}
 
 		await interaction.reply({
@@ -78,6 +71,7 @@ module.exports = {
 			ephemeral: true,
 		});
 
+		// Adds the specified role
 		await member.roles.add(role);
 
 		embedBuilder.setTitle('Beförderung')
@@ -88,6 +82,7 @@ module.exports = {
 			
 			Herzlichen Glückwunsch! 🎉`);
 
+		// Logging-Webhook: Uprank-Channel
 		new WebhookClient({
 			id: '948398318365585409',
 			token: 'klKmpLqMapR_CGyhQDB7p-TKIkxDGT-TidpUHl_629j2DTs4uUdpUzSs2cIVz1kpArcg',
@@ -100,6 +95,7 @@ module.exports = {
 		embedBuilder.setTitle('Beförderung')
 			.setDescription(`<@${member.id}> ➙ <@&${role.id}>`);
 
+		// Logging-Webhook: Personal-Channel
 		new WebhookClient({
 			id: '948429421013000243',
 			token: 'jtMGrMp7fVaKpoiBXaoc-oyEUravk5UyQl01aboC2xQ6G-kJLrOpGLu4c_Yooc1nmBkx',

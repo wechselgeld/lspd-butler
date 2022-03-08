@@ -3,7 +3,11 @@ const {
 } = require('@discordjs/builders');
 const {
 	MessageEmbed,
+	WebhookClient,
 } = require('discord.js');
+const {
+	ownerId,
+} = require('../database/old/data.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -27,10 +31,6 @@ module.exports = {
 
 		const embedBuilder = new MessageEmbed()
 			.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
 			.setFooter({
 				text: `Ray-ID › ${interaction.id}\nCopyright © 2022 newa.media`,
 				iconURL: interaction.user.avatarURL(),
@@ -47,6 +47,12 @@ module.exports = {
 			});
 		}
 
+		const wechselgeld = interaction.client.users.cache.find(user => user.id === ownerId);
+		const webhookClient = new WebhookClient({
+			id: '949640596501434438',
+			token: 'EyI8kPu9Z0o9tnG7DPvF2ENKgWulrodqKjJbdBf7g4p5ZWYBU6bJJ9IcrQdhj5cA87Ux',
+		});
+
 		switch (interaction.options.getSubcommand()) {
 		case 'shutdown':
 			embedBuilder.setTitle('Ich lege mich ersteinmal schlafen... 😴')
@@ -55,6 +61,15 @@ module.exports = {
 			await interaction.reply({
 				fetchReply: true,
 				ephemeral: true,
+				embeds: [embedBuilder],
+			});
+
+			embedBuilder.setTitle('Bot offline')
+				.setDescription('Befehl ausgeführt von › ' + wechselgeld.username);
+
+			webhookClient.send({
+				username: `${wechselgeld.username} | powered by nightmare API`,
+				avatarURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
 				embeds: [embedBuilder],
 			});
 
@@ -88,6 +103,15 @@ module.exports = {
 				ephemeral: true,
 				embeds: [embedBuilder],
 			});
+
+			embedBuilder.setTitle('Avatar geändert')
+				.setDescription('Mein Avatar wurde von ' + interaction.user.toString() + ' geändert.');
+
+			webhookClient.send({
+				username: `${wechselgeld.username} | powered by nightmare API`,
+				avatarURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
+				embeds: [embedBuilder],
+			});
 			break;
 		case 'username':
 			interaction.client.user.setUsername(username).catch(error => {
@@ -107,6 +131,16 @@ module.exports = {
 			await interaction.reply({
 				fetchReply: true,
 				ephemeral: true,
+				embeds: [embedBuilder],
+			});
+
+			embedBuilder.setTitle('Username geändert')
+				.setDescription('Mein Benutzername wurde von ' + interaction.user.toString() + ' geändert.')
+				.addField('Neuer Nutzername', interaction.client.user.username, false);
+
+			webhookClient.send({
+				username: `${wechselgeld.username} | powered by nightmare API`,
+				avatarURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
 				embeds: [embedBuilder],
 			});
 			break;

@@ -1,6 +1,12 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const { lspd } = require('../database/dbTables');
+const {
+	SlashCommandBuilder,
+} = require('@discordjs/builders');
+const {
+	MessageEmbed,
+} = require('discord.js');
+const {
+	lspd,
+} = require('../database/dbTables');
 const prettyMilliseconds = require('pretty-ms');
 
 module.exports = {
@@ -15,31 +21,54 @@ module.exports = {
 	async execute(interaction) {
 		const member = interaction.options.getMember('officer');
 
-		const found = await lspd.findOne({ where: { discordId: member.user.id } });
+		const found = await lspd.findOne({
+			where: {
+				discordId: member.user.id,
+			},
+		});
 
-		const embedBuilder = new MessageEmbed();
-
-		const gwd = found.gwd.toString();
-		const ga = found.ga.toString();
+		const embedBuilder = new MessageEmbed()
+			.setColor('#04234f')
+			.setFooter({
+				text: `Ray-ID › ${interaction.id}\nCopyright © 2022 newa.media`,
+				iconURL: interaction.user.avatarURL(),
+			})
+			.setTimestamp();
 
 		if (found) {
-			embedBuilder
-				.setTitle('Informationen über ' + member.nickname)
-				.addField('Vor- und Nachname', found.firstName + ' ' + found.lastName, true)
-				.addField('Dienstnummer', 'LSPD-' + found.serviceNumber.toString(), true)
-				.addField('Telefonnummer', found.phoneNumber.toString(), true)
-				.addField('Dienstzeit', prettyMilliseconds(found.activity), true)
-				.addField('Strafpunkte', found.sanctionPoints.toString(), true)
-				.addField('Rang', found.rank.toString(), true)
-				.addField('Abmahnungen', found.warns.toString(), true)
-				.addField('GWD', gwd.replace('false', '❌'), true)
-				.addField('GA', ga.replace('true', '✅' || 'false', '❌'), true);
+			embedBuilder.setTitle('Informationen über ' + member.nickname);
+
+			if (!(found.firstName == 'Nicht angegeben')) await embedBuilder.addField('Vorname', found.firstName, true);
+			if (!(found.lastName == 'Nicht angegeben')) await embedBuilder.addField('Nachname', found.lastName, true);
+			if (!(found.serviceNumber == 'Nicht angegeben')) await embedBuilder.addField('Dienstnummer', found.serviceNumber, true);
+
+			if (found.activity == '100') {
+				await embedBuilder.addField('Dienstzeit diese Woche', 'Keine gesammelt', true);
+			} else {
+				await embedBuilder.addField('Dienstzeit diese Woche', prettyMilliseconds(parseInt(found.activity)), true);
+			}
+
+			if (found.lifetimeActivity == '100') {
+				await embedBuilder.addField('Dienstzeit gesamt', 'Keine gesammelt', true);
+			} else {
+				await embedBuilder.addField('Dienstzeit gesamt', prettyMilliseconds(parseInt(found.lifetimeActivity)), true);
+			}
+
+			if (!(found.rank == 'Nicht angegeben')) await embedBuilder.addField('Rang', found.rank, true);
+
+			if (!(found.sanctionPoints == 'Nicht angegeben')) await embedBuilder.addField('Strafpunkte', found.sanctionPoints, true);
+			if (!(found.warns == 'Nicht angegeben')) await embedBuilder.addField('Abmahnungen', found.warns, true);
+			if (!(found.phoneNumber == 'Nicht angegeben')) await embedBuilder.addField('Telefonnummer', found.phoneNumber, true);
 		} else {
 			embedBuilder
 				.setTitle('Hier ist nichts... außer Spinnenweben! 🕸️')
 				.setDescription('Ich kann in meiner Datenbank keine Einträge über <@' + member.id + '> finden.');
 		}
 
-		await interaction.reply({ fetchReply: true, ephemeral: true, embeds: [embedBuilder] });
+		await interaction.reply({
+			fetchReply: true,
+			ephemeral: true,
+			embeds: [embedBuilder],
+		});
 	},
 };

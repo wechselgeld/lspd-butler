@@ -30,10 +30,6 @@ module.exports = {
 
 		const embedBuilder = new MessageEmbed()
 			.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
 			.setFooter({
 				text: `Ray-ID › ${interaction.id}\nCopyright © 2022 newa.media`,
 				iconURL: interaction.user.avatarURL(),

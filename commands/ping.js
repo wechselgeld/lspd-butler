@@ -1,11 +1,17 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const {
+	SlashCommandBuilder,
+} = require('@discordjs/builders');
+const {
+	MessageActionRow,
+	MessageButton,
+	MessageEmbed,
+} = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Antwortet mit der aktuellen Latenz'),
-		
+
 	async execute(interaction) {
 		const row = new MessageActionRow()
 			.addComponents(

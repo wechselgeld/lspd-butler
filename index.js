@@ -14,17 +14,15 @@ const {
 const logger = require('./utilities/logger');
 const logs = require('discord-logs');
 
-process.on('uncaughtException', function(error) {
-	logger.error(error);
-});
-
 const client = new Client({
 	intents: [
 		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_BANS,
 		Intents.FLAGS.GUILD_MESSAGES,
 		Intents.FLAGS.GUILD_VOICE_STATES,
 		Intents.FLAGS.GUILD_PRESENCES,
 		Intents.FLAGS.GUILD_MEMBERS,
+		Intents.FLAGS.GUILD_INVITES,
 	],
 });
 
@@ -111,6 +109,4 @@ setInterval(() => {
 	});
 }, 10000);
 
-client.login(token).then(() => {
-	client.user.setStatus('online');
-});
+client.login(token).then();

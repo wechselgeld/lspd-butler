@@ -16,10 +16,6 @@ module.exports = {
 	async execute(interaction) {
 		const embedBuilder = new MessageEmbed()
 			.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
 			.setTitle('Oh, Du willst also mehr über mich wissen? 😇')
 			.setDescription(`
 			Ich bin der LSPD Butler, gemacht von wechselgeld\nMeine Aufgabe ist es, dem Police Department auf LifeV jegliche Aufgaben abzunehmen und zu automatisieren.

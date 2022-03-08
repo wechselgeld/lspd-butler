@@ -7,6 +7,7 @@ const {
 const {
 	lspd,
 } = require('../database/dbTables');
+const logger = require('../utilities/logger');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,7 +15,7 @@ module.exports = {
 		.setDescription('Fügt Daten zur Datenbank hinzu')
 		.addUserOption(option =>
 			option.setName('officer')
-				.setDescription('Der Officer, welcher eine Beförderung erhalten soll')
+				.setDescription('Der Officer, welcher hinzugefügt werden soll')
 				.setRequired(true))
 		.addStringOption(option =>
 			option.setName('firstname')
@@ -32,31 +33,22 @@ module.exports = {
 			option.setName('ga')
 				.setDescription('GA-Status des Officers')
 				.setRequired(true))
-		.addNumberOption(option =>
+		.addRoleOption(option =>
 			option.setName('rank')
-				.setDescription('Der Rang des Officers (In Zahlen, wobei man für Corp. 5 einsetzen müsste)')
+				.setDescription('Der Rang des Officers')
 				.setRequired(true))
 		.addNumberOption(option =>
 			option.setName('warns')
-				.setDescription('Aktuelle Anzahl der Abmahnungen (In Zahlen)'))
+				.setDescription('Aktuelle Anzahl der Abmahnungen (In Zahlen)')
+				.setRequired(true))
 		.addNumberOption(option =>
 			option.setName('phonenumber')
-				.setDescription('Telefonnummer des Officers'))
+				.setDescription('Telefonnummer des Officers')
+				.setRequired(true))
 		.addIntegerOption(option =>
 			option.setName('sanctionpoints')
-				.setDescription('Aktuelle Anzahl an Strafpunkten des Officers'))
-		.addBooleanOption(option =>
-			option.setName('gwd')
-				.setDescription('GWD-Status des Officers'))
-		.addBooleanOption(option =>
-			option.setName('aa')
-				.setDescription('AA-Status des Officers'))
-		.addBooleanOption(option =>
-			option.setName('vf')
-				.setDescription('VF-Status des Officers'))
-		.addBooleanOption(option =>
-			option.setName('la')
-				.setDescription('LA-Status des Officers')),
+				.setDescription('Aktuelle Anzahl an Strafpunkten des Officers')
+				.setRequired(true)),
 
 	async execute(interaction) {
 		const member = interaction.options.getMember('officer');
@@ -66,26 +58,18 @@ module.exports = {
 		const serviceNumber = interaction.options.getNumber('servicenumber');
 		const sanctionPoints = interaction.options.getInteger('sanctionpoints');
 		const warns = interaction.options.getNumber('warns');
-		const gwd = interaction.options.getBoolean('gwd');
 		const ga = interaction.options.getBoolean('ga');
-		const aa = interaction.options.getBoolean('ga');
-		const vf = interaction.options.getBoolean('ga');
-		const la = interaction.options.getBoolean('ga');
-		const rank = interaction.options.getNumber('rank');
+		const rank = interaction.options.getRole('rank');
 
 		const embedBuilder = new MessageEmbed()
 			.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
 			.setFooter({
 				text: `Ray-ID › ${interaction.id}\nCopyright © 2022 newa.media`,
 				iconURL: interaction.user.avatarURL(),
 			})
 			.setTimestamp();
 
-		if ((!interaction.member.roles.cache.some(userRoles => userRoles.id === '946129353958387742'))) {
+		if (!(interaction.member.roles.cache.some(userRoles => userRoles.id === '946129353958387742'))) {
 			embedBuilder.setTitle('Sorry, Du bist nicht der, den ich erwartet habe... 🔍')
 				.setDescription('Dir fehlt die Berechtigung, um den Befehl ausführen zu dürfen.\n*Du glaubst, dass das ein Fehler ist? Wende Dich bitte an <@272663056075456512>!*');
 
@@ -102,7 +86,6 @@ module.exports = {
 			},
 		});
 
-
 		if (found) {
 			embedBuilder
 				.setTitle(member.nickname + ' existiert bereits')
@@ -116,20 +99,16 @@ module.exports = {
 				.addField('GWD', found.gwd.toString().replace('false', '❌'), true)
 				.addField('GA', found.ga.toString().replace('true', '✅' || 'false', '❌'), true);
 		} else {
-			lspd.create({
+			await lspd.create({
 				discordId: member.user.id,
 				firstName: firstName,
 				lastName: lastName,
-				phoneNumber: phoneNumber,
 				serviceNumber: serviceNumber,
+				ga: ga,
+				rank: rank.name,
 				sanctionPoints: sanctionPoints,
 				warns: warns,
-				gwd: gwd,
-				ga: ga,
-				aa: aa,
-				vf: vf,
-				la: la,
-				rank: rank,
+				phoneNumber: phoneNumber,
 			});
 
 			embedBuilder

@@ -12,6 +12,7 @@ const {
 const {
 	lspd,
 } = require('../database/dbTables');
+const prettyMilliseconds = require('pretty-ms');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -45,7 +46,7 @@ module.exports = {
 			option.setName('ga')
 				.setDescription('GA-Status des Officers')
 				.setRequired(true)),
-        
+
 	async execute(interaction) {
 		const member = interaction.options.getMember('officer');
 		const firstName = interaction.options.getString('firstname');
@@ -82,17 +83,29 @@ module.exports = {
 		});
 
 		if (found) {
-			embedBuilder
-				.setTitle(member.nickname + ' existiert bereits')
-				.setDescription('Ich zeige Dir stattdessen alle Informationen, welche angegeben wurden.')
-				.addField('Vor- und Nachname', found.firstName + ' ' + found.lastName, true)
-				.addField('Dienstnummer', 'LSPD-' + found.serviceNumber.toString(), true)
-				.addField('Telefonnummer', found.phoneNumber.toString(), true)
-				.addField('Strafpunkte', found.sanctionPoints.toString(), true)
-				.addField('Rang', found.rank.toString(), true)
-				.addField('Abmahnungen', found.warns.toString(), true)
-				.addField('GWD', found.gwd.toString().replace('false', '❌'), true)
-				.addField('GA', found.ga.toString().replace('true', '✅' || 'false', '❌'), true);
+			embedBuilder.setTitle('Informationen über ' + member.nickname);
+
+			if (!(found.firstName == 'Nicht angegeben')) await embedBuilder.addField('Vorname', found.firstName, true);
+			if (!(found.lastName == 'Nicht angegeben')) await embedBuilder.addField('Nachname', found.lastName, true);
+			if (!(found.serviceNumber == 'Nicht angegeben')) await embedBuilder.addField('Dienstnummer', found.serviceNumber, true);
+
+			if (found.activity == '100') {
+				await embedBuilder.addField('Dienstzeit diese Woche', 'Keine gesammelt', true);
+			} else {
+				await embedBuilder.addField('Dienstzeit diese Woche', prettyMilliseconds(parseInt(found.activity)), true);
+			}
+
+			if (found.lifetimeActivity == '100') {
+				await embedBuilder.addField('Dienstzeit gesamt', 'Keine gesammelt', true);
+			} else {
+				await embedBuilder.addField('Dienstzeit gesamt', prettyMilliseconds(parseInt(found.lifetimeActivity)), true);
+			}
+
+			if (!(found.rank == 'Nicht angegeben')) await embedBuilder.addField('Rang', found.rank, true);
+
+			if (!(found.sanctionPoints == 'Nicht angegeben')) await embedBuilder.addField('Strafpunkte', found.sanctionPoints, true);
+			if (!(found.warns == 'Nicht angegeben')) await embedBuilder.addField('Abmahnungen', found.warns, true);
+			if (!(found.phoneNumber == 'Nicht angegeben')) await embedBuilder.addField('Telefonnummer', found.phoneNumber, true);
 
 			await interaction.reply({
 				embeds: [embedBuilder],
@@ -114,23 +127,25 @@ module.exports = {
 		}
 
 		await member.setNickname(serviceNumber + ' | ' + firstName + ' ' + lastName, interaction.member.nickname + ' verwendet: /recruit ' + member.user.username);
-		
-		const gwd_roles = [ '946130627726544956', '949638519427575829', '946156330647961660', '946156329934938182', '946130563482398720', '946141318030196796', '946130347337347157', '946136381799952444' ];
-		const ga_roles = [ '946130627726544956', '949638519427575829', '946156330647961660', '946156329934938182', '946130563482398720', '946141319217184829', '946130347337347157', '946136381799952444' ];
-		
-		if (gwd) await member.roles.add(gwd_roles, interaction.member.nickname + ' verwendet: /recruit ' + member.nickname);
-		if (ga) await member.roles.add(ga_roles, interaction.member.nickname + ' verwendet: /recruit ' + member.nickname);
+
+		const gwd_roles = ['946130627726544956', '949638519427575829', '946156330647961660', '946156329934938182', '946130563482398720', '946141318030196796', '946130347337347157', '946136381799952444'];
+		const ga_roles = ['946130627726544956', '949638519427575829', '946156330647961660', '946156329934938182', '946130563482398720', '946141319217184829', '946130347337347157', '946136381799952444'];
+
+		if (gwd) await member.roles.add(gwd_roles, interaction.member.nickname + ' verwendet: /recruit ' + member.nickname + ' (GWD angegeben)');
+		if (ga) await member.roles.add(ga_roles, interaction.member.nickname + ' verwendet: /recruit ' + member.nickname + ' (GA angegeben)');
 
 		await interaction.reply({
 			content: '10-4, wurde gemacht. Ich habe alles nötige erledigt. Erstelle bitte anschließend einen Arbeitsvertrag.',
 			ephemeral: true,
 		});
 
-		embedBuilder.setTitle('Einstellung')
+		embedBuilder.setTitle('👋 » Einstellung')
 			.setDescription(`Sehr geehrte Kolleginnen & Kollegen,
 			zur Kenntnisnahme, es erfolgte **eine Einweisung** in den Polizeidienst.
 			
-			<@${member.id}>`);
+			<@${member.id}>
+			
+			Herzlich willkommen im Police Department!`);
 
 		new WebhookClient({
 			id: '949933275542065152',
@@ -141,8 +156,11 @@ module.exports = {
 			embeds: [embedBuilder],
 		});
 
-		embedBuilder.setTitle('Einstellung')
-			.setDescription(`<@${member.id}>`);
+		embedBuilder.setTitle('👋 » Einstellung')
+			.setDescription(`${member.user.toString()} wurde von ${interaction.user.toString()} eingestellt.`)
+			.addField('Vorname', firstName, true)
+			.addField('Nachname', lastName, true)
+			.addField('Dienstnummer', serviceNumber.toString(), true);
 
 		new WebhookClient({
 			id: '949933029789413407',

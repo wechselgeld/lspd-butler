@@ -23,13 +23,8 @@ module.exports = {
 					.setDisabled(false),
 			);
 
-		const embedBuilder = new MessageEmbed();
-
-		embedBuilder.setColor('#04234f')
-			.setAuthor({
-				name: 'Los Santos Police Department',
-				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
-			})
+		const embedBuilder = new MessageEmbed()
+			.setColor('#04234f')
 			.setTitle('Langsam werde ich echt müde... 🥱')
 			.setDescription(`Ich bin bereits ${prettyMilliseconds(interaction.client.uptime)} am rattern!`)
 			.setFooter({

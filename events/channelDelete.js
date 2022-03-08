@@ -9,28 +9,29 @@ const {
 } = require('discord.js');
 
 module.exports = {
-	name: 'guildMemberNicknameUpdate',
+	name: 'channelDelete',
 	once: false,
-	async execute(member, oldNickname, newNickname) {
+	async execute(channel) {
 		const embedBuilder = new MessageEmbed();
 
 		embedBuilder.setColor('#04234f')
-			.setTitle('Nickname geändert')
-			.setDescription('<@' + member.user.id + '>\'s Nickname wurde geändert.')
-			.addField('Alter Name', oldNickname, true)
-			.addField('Neuer Name', newNickname, true)
+			.setTitle('Kanal gelöscht')
+			.setDescription('Der "' + channel.name + '"-Kanal wurde gelöscht.')
+			.addField('Ehem. Position', channel.position.toString(), true)
+			.addField('Ehem. Typ', channel.type.toString(), true)
 			.setFooter({
 				text: 'Ray-ID › ' + Date.now() + '\nCopyright © 2022 newa.media',
-				iconURL: member.user.avatarURL(),
+				iconURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
 			})
 			.setTimestamp();
 
 		// Logging-Webhook: Server, nickname-change
-		const webhookClient = new WebhookClient({
+		new WebhookClient({
 			id: '949956152643444796',
 			token: '6UodxKN7RrHtYxHiLkG0PWx0YuXkVjP9g8A_CI24AXzaEZHeH-8slkx7TWQb2QjhWTRb',
 		}).send({
-			username: `${member.nickname} | powered by nightmare API`,
+			content: '⚠️ <@&946129353958387742>',
+			username: 'LSPD Butler | powered by nightmare API',
 			avatarURL: 'https://cdn.newa.media/static/content/int/efuNuzVFy/l_4phwhcVwzTRGAzncjPwx.png',
 			embeds: [embedBuilder],
 		});
